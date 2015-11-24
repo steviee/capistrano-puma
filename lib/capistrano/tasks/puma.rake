@@ -104,12 +104,10 @@ namespace :puma do
           puma_switch_user(role) do
             with rack_env: fetch(:puma_env) do
               if test "[ -f #{fetch(:puma_pid)} ]" and test :kill, "-0 $( cat #{fetch(:puma_pid)} )"
-                # NOTE pid exist but state file is nonsense, so ignore that case
-                execute :pumactl, "-P #{fetch(:puma_pid)} -F #{fetch(:puma_conf)} #{command}"
-              else
-                # Puma is not running or state file is not present : Run it
-                invoke 'puma:start'
+                invoke 'puma:stop'
               end
+              # Puma is not running or state file is not present : Run it
+              invoke 'puma:start'
             end
           end
         end
